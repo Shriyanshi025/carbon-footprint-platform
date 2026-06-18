@@ -97,6 +97,12 @@ carbon-footprint-platform/
 
 > The current emission factors are simplified estimates designed for awareness and educational use. They should not be treated as an official environmental audit.
 
+## Live Demo
+
+- Frontend: https://carbon-footprint-platform-azure.vercel.app
+- Backend API: https://carbon-footprint-platform-s6r4.onrender.com
+- API Documentation: https://carbon-footprint-platform-s6r4.onrender.com/docs
+
 ## Local Setup
 
 ### 1. Clone the repository
