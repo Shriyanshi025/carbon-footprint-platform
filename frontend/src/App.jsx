@@ -11,6 +11,9 @@ import {
   Legend,
 } from 'chart.js';
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || '/api';
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -87,7 +90,7 @@ const App = () => {
     setIsCalculating(true);
 
     try {
-      const res = await axios.post('/api/calculate', formData);
+      const res = await axios.post(`${API_BASE_URL}/calculate`, formData);
 
       setFootprintData(res.data);
       await fetchTips(res.data);
@@ -112,7 +115,7 @@ const App = () => {
 
   const fetchTips = async (data) => {
     try {
-      const res = await axios.post('/api/tips', {
+      const res = await axios.post(`${API_BASE_URL}/tips`, {
         footprint_data: data,
       });
 

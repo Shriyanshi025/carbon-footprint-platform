@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
 app = FastAPI()
 
 # CORS configuration
@@ -18,6 +20,18 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        frontend_url,
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
 # Gemini AI configuration
