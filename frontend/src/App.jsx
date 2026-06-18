@@ -90,7 +90,9 @@ const App = () => {
     setIsCalculating(true);
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/calculate`, formData);
+      const res = await axios.post(`${API_BASE_URL}/calculate`, formData, {
+        timeout : 10000,
+      });
 
       setFootprintData(res.data);
       await fetchTips(res.data);
@@ -116,7 +118,10 @@ const App = () => {
   const fetchTips = async (data) => {
     try {
       const res = await axios.post(`${API_BASE_URL}/tips`, {
-        footprint_data: data,
+        footprint_data: data
+      },
+      {
+        timeout : 10000
       });
 
       setTips(res.data.tips);
