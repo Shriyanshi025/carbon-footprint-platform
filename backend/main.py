@@ -13,7 +13,12 @@ from calculations import (
     calculate_transport_footprint,
 )
 
-from models import FootprintRequest, TipsRequest
+from models import (
+    FootprintRequest,
+    FootprintResponse,
+    TipsRequest,
+    TipsResponse,
+)
 
 from tips_service import generate_reduction_tips
 
@@ -39,7 +44,10 @@ app.add_middleware(
 def read_root():
     return {"message": "Carbon Footprint API"}
 
-@app.post("/calculate")
+@app.post(
+    "/calculate",
+    response_model=FootprintResponse,
+)
 def calculate_footprint(data: FootprintRequest):
     transport_footprint = calculate_transport_footprint(
         data.transport.distance,
@@ -80,7 +88,10 @@ def calculate_footprint(data: FootprintRequest):
     "insight": insight,
     }
 
-@app.post("/tips")
+@app.post(
+    "/tips",
+    response_model=TipsResponse,
+)
 def get_tips(data: TipsRequest):
     return generate_reduction_tips(
         data.footprint_data,

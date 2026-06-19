@@ -1,9 +1,7 @@
 """Request models used by the Carbon Footprint API."""
 
-from typing import Literal
-
+from typing import Literal, Optional
 from pydantic import BaseModel, Field
-
 
 class TransportData(BaseModel):
     distance: float = Field(
@@ -66,4 +64,51 @@ class FootprintRequest(BaseModel):
 
 class TipsRequest(BaseModel):
     footprint_data: dict
-    
+
+
+class FootprintBreakdown(BaseModel):
+    transport: float = Field(ge=0)
+    food: float = Field(ge=0)
+    electricity: float = Field(ge=0)
+    shopping: float = Field(ge=0)
+
+
+class FootprintInsight(BaseModel):
+    impact_level: Literal[
+        "low",
+        "moderate",
+        "high",
+    ]
+    dominant_category: Optional[
+        Literal[
+            "transport",
+            "food",
+            "electricity",
+            "shopping",
+        ]
+    ] = None
+    dominant_percentage: float = Field(
+        ge=0,
+        le=100,
+    )
+    message: str = Field(
+        min_length=1,
+        max_length=500,
+    )
+
+
+class FootprintResponse(BaseModel):
+    total_footprint: float = Field(ge=0)
+    breakdown: FootprintBreakdown
+    insight: FootprintInsight
+
+
+class TipsResponse(BaseModel):
+    tips: str = Field(
+        min_length=1,
+        max_length=5000,
+    )
+    source: Literal[
+        "gemini",
+        "fallback",
+    ]
