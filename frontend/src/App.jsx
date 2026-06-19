@@ -94,7 +94,11 @@ const App = () => {
         await calculateCarbonFootprint(formData);
 
       setFootprintData(calculationResult);
-      await fetchTips(calculationResult);
+
+      setTips('Preparing your personalized eco action plan...');
+      setTipsSource('loading');
+
+      void fetchTips(calculationResult);
     } catch (error) {
       setFootprintData(null);
       setTips('');
@@ -117,7 +121,7 @@ const App = () => {
   const fetchTips = async (data) => {
     try {
       const tipsResult = await fetchReductionTips(data);
-  
+
       setTips(tipsResult.tips);
       setTipsSource(tipsResult.source || 'fallback');
     } catch (error) {

@@ -5,21 +5,77 @@ const API_BASE_URL =
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
+const wait = (milliseconds) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+const shouldRetryRequest = (error) => {
+  const isNetworkError = !error.response;
+  const isTimeout = error.code === 'ECONNABORTED';
+  const isServerError = error.response?.status >= 500;
+
+  return isNetworkError || isTimeout || isServerError;
+};
+
+const postWithRetry = async (
+  endpoint,
+  payload,
+  {
+    timeout = 15000,
+    retries = 1,
+  } = {}
+) => {
+  let lastError;
+
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    try {
+      return await apiClient.post(endpoint, payload, {
+        timeout,
+      });
+    } catch (error) {
+      lastError = error;
+
+      const noRetriesLeft = attempt === retries;
+
+      if (noRetriesLeft || !shouldRetryRequest(error)) {
+        throw error;
+      }
+
+      await wait(1200);
+    }
+  }
+
+  throw lastError;
+};
+
 export const calculateCarbonFootprint = async (formData) => {
-  const response = await apiClient.post('/calculate', formData);
+  const response = await postWithRetry(
+    '/calculate',
+    formData,
+    {
+      timeout: 20000,
+      retries: 1,
+    }
+  );
+
   return response.data;
 };
 
 export const fetchReductionTips = async (footprintData) => {
-  const response = await apiClient.post('/tips', {
-    footprint_data: footprintData,
-  });
+  const response = await postWithRetry(
+    '/tips',
+    {
+      footprint_data: footprintData,
+    },
+    {
+      timeout: 15000,
+      retries: 1,
+    }
+  );
 
   return response.data;
 };
