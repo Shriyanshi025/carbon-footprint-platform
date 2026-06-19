@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
 
+from insights import build_footprint_insight
+
 from calculations import (
     calculate_electricity_footprint,
     calculate_food_footprint,
@@ -67,9 +69,15 @@ def calculate_footprint(data: FootprintRequest):
 
     total_footprint = round(sum(breakdown.values()), 3)
 
+    insight = build_footprint_insight(
+    total_footprint,
+    breakdown,
+    )
+
     return {
-        "total_footprint": total_footprint,
-        "breakdown": breakdown,
+    "total_footprint": total_footprint,
+    "breakdown": breakdown,
+    "insight": insight,
     }
 
 @app.post("/tips")

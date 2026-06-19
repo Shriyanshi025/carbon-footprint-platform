@@ -73,6 +73,10 @@ def test_calculate_endpoint_with_valid_data():
         "electricity": 2.375,
         "shopping": 3.0,
     }
+    assert data["insight"]["impact_level"] == "low"
+    assert data["insight"]["dominant_category"] == "shopping"
+    assert data["insight"]["dominant_percentage"] == pytest.approx(39.6)
+    assert "Shopping contributes" in data["insight"]["message"]
 
 
 def test_calculate_endpoint_rejects_negative_values():
