@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -10,9 +9,10 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || '/api';
+import {
+  calculateCarbonFootprint,
+  fetchReductionTips,
+} from './services/api';
 
 ChartJS.register(
   CategoryScale,
@@ -90,12 +90,11 @@ const App = () => {
     setIsCalculating(true);
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/calculate`, formData, {
-        timeout : 10000,
-      });
+      const calculationResult =
+        await calculateCarbonFootprint(formData);
 
-      setFootprintData(res.data);
-      await fetchTips(res.data);
+      setFootprintData(calculationResult);
+      await fetchTips(calculationResult);
     } catch (error) {
       setFootprintData(null);
       setTips('');
@@ -117,15 +116,10 @@ const App = () => {
 
   const fetchTips = async (data) => {
     try {
-      const res = await axios.post(`${API_BASE_URL}/tips`, {
-        footprint_data: data
-      },
-      {
-        timeout : 10000
-      });
-
-      setTips(res.data.tips);
-      setTipsSource(res.data.source || 'fallback');
+      const tipsResult = await fetchReductionTips(data);
+  
+      setTips(tipsResult.tips);
+      setTipsSource(tipsResult.source || 'fallback');
     } catch (error) {
       console.error('Error fetching tips:', error);
       setTips('Personalized tips are temporarily unavailable.');
