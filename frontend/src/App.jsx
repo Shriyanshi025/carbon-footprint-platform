@@ -37,6 +37,12 @@ const App = () => {
     shopping: { amount_spent: '', category: 'other' },
   });
 
+  const clearResults = () => {
+    setFootprintData(null);
+    setTips('');
+    setTipsSource('');
+  };
+
   useEffect(() => {
     void wakeBackend();
   }, []);
@@ -72,9 +78,7 @@ const App = () => {
     if (values.some((value) => value === '')) {
       setErrorMessage('Please fill in all activity fields before calculating.');
 
-      setFootprintData(null);
-      setTips('');
-      setTipsSource('');
+      clearResults();
 
       return;
     }
@@ -84,9 +88,7 @@ const App = () => {
         'Values cannot be negative. Please enter zero or a positive number.'
       );
 
-      setFootprintData(null);
-      setTips('');
-      setTipsSource('');
+      clearResults();
 
       return;
     }
@@ -105,9 +107,7 @@ const App = () => {
 
       void fetchTips(calculationResult);
     } catch (error) {
-      setFootprintData(null);
-      setTips('');
-      setTipsSource('');
+      clearResults();
 
       if (error.response?.status === 422) {
         setErrorMessage(
