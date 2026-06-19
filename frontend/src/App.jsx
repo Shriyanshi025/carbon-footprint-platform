@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -12,6 +12,7 @@ import {
 import {
   calculateCarbonFootprint,
   fetchReductionTips,
+  wakeBackend,
 } from './services/api';
 
 ChartJS.register(
@@ -35,6 +36,10 @@ const App = () => {
     electricity: { kwh: '' },
     shopping: { amount_spent: '', category: 'other' },
   });
+
+  useEffect(() => {
+    void wakeBackend();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value, type } = e.target;
