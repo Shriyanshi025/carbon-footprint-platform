@@ -26,6 +26,11 @@ CATEGORY_ACTIONS = {
     ),
 }
 
+REDUCTION_TARGETS = {
+        "low": 5,
+        "moderate": 10,
+        "high": 15,
+    }
 
 def get_impact_level(total_footprint: float) -> str:
     """Classify the calculated footprint into a simple awareness level."""
@@ -50,6 +55,9 @@ def build_footprint_insight(
             "impact_level": "low",
             "dominant_category": None,
             "dominant_percentage": 0,
+            "target_reduction_percent": 0,
+            "potential_savings": 0,
+            "target_footprint": 0,
             "message": (
                 "No significant emissions were recorded for the "
                 "provided activities."
@@ -78,12 +86,33 @@ def build_footprint_insight(
         "Focus first on the activity producing the most emissions.",
     )
 
+    impact_level = get_impact_level(total_footprint)
+
+    target_reduction_percent = REDUCTION_TARGETS[
+        impact_level
+    ]
+
+    potential_savings = round(
+        total_footprint
+        * target_reduction_percent
+        / 100,
+        3,
+    )
+
+    target_footprint = round(
+        total_footprint - potential_savings,
+        3,
+    )
+
     return {
-        "impact_level": get_impact_level(total_footprint),
-        "dominant_category": dominant_category,
-        "dominant_percentage": dominant_percentage,
-        "message": (
-            f"{category_label} contributes approximately "
-            f"{dominant_percentage}% of your footprint. {action}"
-        ),
-    }
+    "impact_level": impact_level,
+    "dominant_category": dominant_category,
+    "dominant_percentage": dominant_percentage,
+    "target_reduction_percent": target_reduction_percent,
+    "potential_savings": potential_savings,
+    "target_footprint": target_footprint,
+    "message": (
+        f"{category_label} contributes approximately "
+        f"{dominant_percentage}% of your footprint. {action}"
+    ),
+}

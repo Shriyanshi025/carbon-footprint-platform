@@ -95,6 +95,14 @@ class FootprintInsight(BaseModel):
         min_length=1,
         max_length=500,
     )
+    target_reduction_percent: int = Field(
+        ge=0,
+        le=100,
+    )
+
+    potential_savings: float = Field(ge=0)
+
+    target_footprint: float = Field(ge=0)
 
 
 class FootprintResponse(BaseModel):

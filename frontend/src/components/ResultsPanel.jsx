@@ -75,6 +75,43 @@ const ResultsPanel = ({
                             </p>
                         </div>
                     )}
+                    {footprintData?.insight?.target_reduction_percent > 0 && (
+                        <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-5">
+                            <h3 className="text-lg font-semibold text-gray-700">
+                                Your Next Reduction Goal
+                            </h3>
+
+                            <p className="mt-2 text-gray-700">
+                                Aim to reduce your footprint by{' '}
+                                <span className="font-bold text-emerald-700">
+                                    {footprintData.insight.target_reduction_percent}%
+                                </span>
+                                .
+                            </p>
+
+                            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                <div className="rounded-md bg-white p-3">
+                                    <p className="text-xs font-medium uppercase text-gray-500">
+                                        Potential saving
+                                    </p>
+
+                                    <p className="mt-1 text-xl font-bold text-emerald-700">
+                                        {footprintData.insight.potential_savings.toFixed(2)} kg CO2e
+                                    </p>
+                                </div>
+
+                                <div className="rounded-md bg-white p-3">
+                                    <p className="text-xs font-medium uppercase text-gray-500">
+                                        Target footprint
+                                    </p>
+
+                                    <p className="mt-1 text-xl font-bold text-emerald-700">
+                                        {footprintData.insight.target_footprint.toFixed(2)} kg CO2e
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     <div className="mt-8">
                         <h2 className="text-2xl font-semibold text-gray-700 mb-4">
                             Footprint Breakdown

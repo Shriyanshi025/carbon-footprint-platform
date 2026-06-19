@@ -77,6 +77,9 @@ def test_calculate_endpoint_with_valid_data():
     assert data["insight"]["dominant_category"] == "shopping"
     assert data["insight"]["dominant_percentage"] == pytest.approx(39.6)
     assert "Shopping contributes" in data["insight"]["message"]
+    assert data["insight"]["target_reduction_percent"] == 5
+    assert data["insight"]["potential_savings"] == pytest.approx(0.379)
+    assert data["insight"]["target_footprint"] == pytest.approx(7.196)
 
 
 def test_calculate_endpoint_rejects_negative_values():

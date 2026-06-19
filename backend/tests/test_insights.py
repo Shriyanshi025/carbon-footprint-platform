@@ -41,6 +41,9 @@ def test_insight_identifies_dominant_category():
     assert insight["dominant_category"] == "transport"
     assert insight["dominant_percentage"] == pytest.approx(60.0)
     assert "Transport contributes" in insight["message"]
+    assert insight["target_reduction_percent"] == 10
+    assert insight["potential_savings"] == pytest.approx(1.0)
+    assert insight["target_footprint"] == pytest.approx(9.0)
 
 
 def test_zero_footprint_returns_safe_insight():
@@ -62,6 +65,9 @@ def test_zero_footprint_returns_safe_insight():
             "No significant emissions were recorded for the "
             "provided activities."
         ),
+        "target_reduction_percent": 0,
+        "potential_savings": 0,
+        "target_footprint": 0,
     }
 
 
