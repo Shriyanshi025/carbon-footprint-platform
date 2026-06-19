@@ -7,6 +7,13 @@ import google.genai as genai
 import os
 from dotenv import load_dotenv
 
+from calculations import (
+    calculate_electricity_footprint,
+    calculate_food_footprint,
+    calculate_shopping_footprint,
+    calculate_transport_footprint,
+)
+
 load_dotenv()
 
 frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
@@ -93,45 +100,6 @@ class FootprintRequest(BaseModel):
 
 class TipsRequest(BaseModel):
     footprint_data: dict
-
-# Carbon footprint calculation logic
-def calculate_transport_footprint(distance, vehicle_type):
-    # Emission factors (kg CO2e per km)
-    emission_factors = {
-        "car": 0.17,
-        "bus": 0.08,
-        "train": 0.04,
-        "plane": 0.25,
-        "motorcycle": 0.1
-    }
-    return distance * emission_factors.get(vehicle_type, 0)
-
-def calculate_food_footprint(food_type, consumption):
-    # Emission factors (kg CO2e per kg)
-    emission_factors = {
-        "red_meat": 27,
-        "white_meat": 7,
-        "fish": 6,
-        "dairy": 1,
-        "vegan": 0.5
-    }
-    return consumption * emission_factors.get(food_type, 0)
-
-def calculate_electricity_footprint(kwh):
-    # Average emission factor (kg CO2e per kWh)
-    emission_factor = 0.475
-    return kwh * emission_factor
-
-def calculate_shopping_footprint(amount_spent, category):
-    # Emission factors (kg CO2e per dollar spent) - highly simplified
-    emission_factors = {
-        "electronics": 0.5,
-        "clothing": 0.2,
-        "groceries": 0.1,
-        "other": 0.3
-    }
-    return amount_spent * emission_factors.get(category, 0)
-
 
 @app.post("/calculate")
 def calculate_footprint(data: FootprintRequest):
