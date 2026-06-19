@@ -1,11 +1,15 @@
 from fastapi.testclient import TestClient
 
+import time
 import tips_service
 from main import app
 from tips_service import (
+    build_cache_key,
     build_fallback_tips,
     build_gemini_prompt,
+    cache_tips,
     generate_reduction_tips,
+    get_cached_tips,
 )
 
 
@@ -70,3 +74,84 @@ def test_tips_endpoint_returns_fallback_without_gemini_key(
     assert data["source"] == "fallback"
     assert "tips" in data
     assert "transport" in data["tips"]
+
+
+def test_cache_key_is_stable_for_same_data():
+    reordered_footprint = {
+        "breakdown": {
+            "shopping": 1.0,
+            "electricity": 2.5,
+            "food": 2.0,
+            "transport": 7.0,
+        },
+        "total_footprint": 12.5,
+    }
+
+    assert build_cache_key(SAMPLE_FOOTPRINT) == build_cache_key(
+        reordered_footprint
+    )
+
+
+def test_cached_tips_are_returned_as_copy(monkeypatch):
+    monkeypatch.setattr(tips_service, "_tips_cache", tips_service.OrderedDict())
+
+    cache_key = build_cache_key(SAMPLE_FOOTPRINT)
+    original_result = {
+        "tips": "Cached recommendation",
+        "source": "gemini",
+    }
+
+    cache_tips(cache_key, original_result)
+
+    cached_result = get_cached_tips(cache_key)
+
+    assert cached_result == original_result
+    assert cached_result is not original_result
+
+
+def test_expired_cache_entry_is_removed(monkeypatch):
+    monkeypatch.setattr(tips_service, "_tips_cache", tips_service.OrderedDict())
+    monkeypatch.setattr(tips_service, "CACHE_TTL_SECONDS", 1)
+
+    cache_key = build_cache_key(SAMPLE_FOOTPRINT)
+
+    tips_service._tips_cache[cache_key] = (
+        time.monotonic() - 2,
+        {
+            "tips": "Expired recommendation",
+            "source": "gemini",
+        },
+    )
+
+    assert get_cached_tips(cache_key) is None
+    assert cache_key not in tips_service._tips_cache
+
+
+def test_repeated_request_uses_cached_gemini_response(monkeypatch):
+    monkeypatch.setattr(tips_service, "_tips_cache", tips_service.OrderedDict())
+
+    call_count = {"value": 0}
+
+    class FakeResponse:
+        text = "1. First tip\n2. Second tip\n3. Third tip"
+
+    class FakeModels:
+        def generate_content(self, **kwargs):
+            call_count["value"] += 1
+            return FakeResponse()
+
+    class FakeClient:
+        models = FakeModels()
+
+    monkeypatch.setattr(
+        tips_service,
+        "get_gemini_client",
+        lambda: FakeClient(),
+    )
+
+    first_result = generate_reduction_tips(SAMPLE_FOOTPRINT)
+    second_result = generate_reduction_tips(SAMPLE_FOOTPRINT)
+
+    assert first_result == second_result
+    assert first_result["source"] == "gemini"
+    assert call_count["value"] == 1
