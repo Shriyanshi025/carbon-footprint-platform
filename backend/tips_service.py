@@ -1,7 +1,9 @@
 """Personalized carbon-reduction recommendation service."""
-
+import json
+import time
 import logging
 import os
+from collections import OrderedDict
 from typing import Any
 
 import google.genai as genai
@@ -46,7 +48,61 @@ GENERAL_TIPS = [
 
 _client = None
 
+CACHE_TTL_SECONDS = 600
+MAX_CACHE_ENTRIES = 50
 
+_tips_cache = OrderedDict()
+
+def build_cache_key(
+    footprint_data: dict[str, Any],
+) -> str:
+    """Create a stable key for equivalent footprint data."""
+
+    return json.dumps(
+        footprint_data,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+
+
+def get_cached_tips(
+    cache_key: str,
+) -> dict[str, str] | None:
+    """Return a non-expired cached Gemini response."""
+
+    cached_entry = _tips_cache.get(cache_key)
+
+    if cached_entry is None:
+        return None
+
+    created_at, result = cached_entry
+
+    if time.monotonic() - created_at > CACHE_TTL_SECONDS:
+        del _tips_cache[cache_key]
+        return None
+
+    _tips_cache.move_to_end(cache_key)
+
+    return result.copy()
+
+
+def cache_tips(
+    cache_key: str,
+    result: dict[str, str],
+) -> None:
+    """Store a bounded Gemini response in memory."""
+
+    _tips_cache[cache_key] = (
+        time.monotonic(),
+        result.copy(),
+    )
+
+    _tips_cache.move_to_end(cache_key)
+
+    while len(_tips_cache) > MAX_CACHE_ENTRIES:
+        _tips_cache.popitem(last=False)
+        
+        
 def get_gemini_client():
     """Create and reuse a Gemini client only when recommendations are requested."""
 
@@ -104,11 +160,16 @@ def build_gemini_prompt(
         "Keep each tip short, specific, and easy to follow."
     )
 
-
 def generate_reduction_tips(
     footprint_data: dict[str, Any],
 ) -> dict[str, str]:
     """Generate Gemini recommendations with deterministic fallback support."""
+
+    cache_key = build_cache_key(footprint_data)
+    cached_result = get_cached_tips(cache_key)
+
+    if cached_result is not None:
+        return cached_result
 
     fallback_tips = build_fallback_tips(footprint_data)
 
@@ -125,10 +186,14 @@ def generate_reduction_tips(
         if not response_text:
             raise ValueError("Gemini returned an empty response")
 
-        return {
+        result = {
             "tips": response_text,
             "source": "gemini",
         }
+
+        cache_tips(cache_key, result)
+
+        return result
 
     except Exception as error:
         logger.warning(
