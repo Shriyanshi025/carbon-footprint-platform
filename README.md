@@ -2,6 +2,12 @@
 
 A full-stack web application that helps individuals understand, calculate, and reduce their carbon footprint through activity tracking, visual breakdowns, input validation, and personalized sustainability recommendations.
 
+## Live Demo
+
+- Frontend: https://carbon-footprint-platform-azure.vercel.app
+- Backend API: https://carbon-footprint-platform-s6r4.onrender.com
+- API Documentation: https://carbon-footprint-platform-s6r4.onrender.com/docs
+
 ## Problem Statement
 
 Many people want to live more sustainably but do not clearly understand how their daily choices contribute to carbon emissions.
@@ -163,11 +169,6 @@ carbon-footprint-platform/
 
 > The current emission factors are simplified estimates designed for awareness and educational use. They should not be treated as an official environmental audit.
 
-## Live Demo
-
-- Frontend: https://carbon-footprint-platform-azure.vercel.app
-- Backend API: https://carbon-footprint-platform-s6r4.onrender.com
-- API Documentation: https://carbon-footprint-platform-s6r4.onrender.com/docs
 
 ## Local Setup
 
@@ -262,7 +263,7 @@ Current automated test coverage includes:
 Current result:
 
 ```text
-25 passed
+27 passed
 ```
 
 ```md

@@ -448,7 +448,7 @@ pytest.approx(1.7)
 ### Verified Result
 
 ```text
-8 passed
+27 passed
 ```
 
 The tests verify both calculation accuracy and backend validation behaviour.
