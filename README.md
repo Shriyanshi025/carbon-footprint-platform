@@ -1,6 +1,6 @@
 # Carbon Footprint Awareness Platform
 
-A full-stack web application that helps individuals understand, calculate, and reduce their carbon footprint through activity tracking, visual breakdowns, input validation, and personalized sustainability recommendations.
+A full-stack web application that helps individuals understand, calculate, and reduce their carbon footprint through activity-based calculations, visual breakdowns, input validation, and personalized sustainability recommendations.
 
 ## Live Demo
 
@@ -49,7 +49,7 @@ The platform combines deterministic carbon calculations with contextual decision
 ## Assumptions
 
 * Emission factors are simplified estimates for awareness and educational use.
-* User inputs represent activity within the period selected by the user.
+* User inputs represent self-reported activity for a consistent estimation period.
 * Shopping emissions use a simplified spend-based estimation approach.
 * Impact levels and reduction targets are guidance rather than certified environmental standards.
 * Results are not intended to replace a professional environmental audit.
