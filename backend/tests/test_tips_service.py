@@ -24,6 +24,18 @@ SAMPLE_FOOTPRINT = {
         "electricity": 2.5,
         "shopping": 1.0,
     },
+    "insight": {
+        "impact_level": "moderate",
+        "dominant_category": "transport",
+        "dominant_percentage": 56.0,
+        "target_reduction_percent": 10,
+        "potential_savings": 1.25,
+        "target_footprint": 11.25,
+        "message": (
+            "Transport contributes approximately 56.0% of your footprint. "
+            "Prioritize public transport, carpooling, walking, or cycling."
+        ),
+    },
 }
 
 
@@ -78,6 +90,18 @@ def test_tips_endpoint_returns_fallback_without_gemini_key(
 
 def test_cache_key_is_stable_for_same_data():
     reordered_footprint = {
+        "insight": {
+            "message": (
+                "Transport contributes approximately 56.0% of your footprint. "
+                "Prioritize public transport, carpooling, walking, or cycling."
+            ),
+            "target_footprint": 11.25,
+            "potential_savings": 1.25,
+            "target_reduction_percent": 10,
+            "dominant_percentage": 56.0,
+            "dominant_category": "transport",
+            "impact_level": "moderate",
+        },
         "breakdown": {
             "shopping": 1.0,
             "electricity": 2.5,
@@ -155,3 +179,16 @@ def test_repeated_request_uses_cached_gemini_response(monkeypatch):
     assert first_result == second_result
     assert first_result["source"] == "gemini"
     assert call_count["value"] == 1
+
+
+def test_tips_endpoint_rejects_invalid_footprint_structure():
+    response = client.post(
+        "/tips",
+        json={
+            "footprint_data": {
+                "unexpected": "invalid",
+            },
+        },
+    )
+
+    assert response.status_code == 422

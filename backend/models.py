@@ -62,10 +62,6 @@ class FootprintRequest(BaseModel):
     shopping: ShoppingData
 
 
-class TipsRequest(BaseModel):
-    footprint_data: dict
-
-
 class FootprintBreakdown(BaseModel):
     transport: float = Field(ge=0)
     food: float = Field(ge=0)
@@ -109,6 +105,10 @@ class FootprintResponse(BaseModel):
     total_footprint: float = Field(ge=0)
     breakdown: FootprintBreakdown
     insight: FootprintInsight
+
+
+class TipsRequest(BaseModel):
+    footprint_data: FootprintResponse
 
 
 class TipsResponse(BaseModel):

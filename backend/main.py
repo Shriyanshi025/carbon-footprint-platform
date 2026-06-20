@@ -94,7 +94,7 @@ def calculate_footprint(data: FootprintRequest):
 )
 def get_tips(data: TipsRequest):
     return generate_reduction_tips(
-        data.footprint_data,
+        data.footprint_data.model_dump(),
     )
 
 if __name__ == "__main__":
