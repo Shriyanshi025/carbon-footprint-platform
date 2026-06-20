@@ -40,6 +40,10 @@ const ResultsPanel = ({
 }) => {
     const tipsMetadata = getTipsMetadata(tipsSource);
 
+    const breakdownEntries = Object.entries(
+        footprintData?.breakdown || {}
+    );
+
     return (
         <div>
             {footprintData && (
@@ -112,13 +116,38 @@ const ResultsPanel = ({
                             </div>
                         </div>
                     )}
-                    <div className="mt-8">
-                        <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+                    <section
+                        className="mt-8"
+                        aria-labelledby="breakdown-heading"
+                    >
+                        <h2
+                            id="breakdown-heading"
+                            className="text-2xl font-semibold text-gray-700 mb-4"
+                        >
                             Footprint Breakdown
                         </h2>
 
-                        <Bar data={chartData} />
-                    </div>
+                        <div
+                            role="img"
+                            aria-label="Bar chart showing carbon emissions by activity category"
+                        >
+                            <Bar data={chartData} />
+                        </div>
+
+                        <div className="sr-only">
+                            <p>
+                                Carbon footprint breakdown:
+                            </p>
+
+                            <ul>
+                                {breakdownEntries.map(([category, value]) => (
+                                    <li key={category}>
+                                        {category}: {value.toFixed(2)} kilograms of carbon dioxide equivalent
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </section>
                 </>
             )}
 
