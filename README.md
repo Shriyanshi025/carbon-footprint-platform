@@ -72,7 +72,7 @@ The platform combines deterministic carbon calculations with contextual decision
 * Validated request and response schemas through Pydantic
 * Accessible semantic forms, field groups, status updates, and error feedback
 * Responsive interface for desktop and mobile devices
-* 25 automated backend tests covering calculations, validation, insights, fallback logic, and caching
+* 27 automated backend tests covering calculations, validation, insights, fallback logic, and caching
 * Secure environment-variable and restricted CORS configuration
 
 
@@ -266,7 +266,7 @@ Current result:
 27 passed
 ```
 
-```md
+
 ## Validation, Reliability, and Efficiency
 
 The platform applies safeguards at multiple levels:
@@ -299,6 +299,8 @@ Production reliability measures include:
 * Only required HTTP methods and headers are allowed
 * Dependency folders and generated files are excluded from version control
 * Invalid values and unsupported categories are rejected before processing
+* Defensive API response headers prevent MIME sniffing and frame embedding
+* Referrer, camera, microphone, and geolocation permissions are restricted
 
 ## Accessibility
 
@@ -313,6 +315,8 @@ Production reliability measures include:
 * `aria-busy` feedback while the Eco Action Plan is loading
 * Clear measurement units, descriptions, and status labels
 * Responsive single-column layout on smaller screens
+* Screen-reader-friendly carbon-breakdown chart label
+* Hidden textual summary of category-wise chart values
 
 ## AI-Assisted Development
 
