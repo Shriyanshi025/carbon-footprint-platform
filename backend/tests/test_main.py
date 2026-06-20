@@ -128,3 +128,15 @@ def test_calculate_endpoint_rejects_invalid_vehicle():
     response = client.post("/calculate", json=payload)
 
     assert response.status_code == 422
+
+
+def test_security_headers_are_present():
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["referrer-policy"] == "no-referrer"
+    assert response.headers["permissions-policy"] == (
+        "camera=(), microphone=(), geolocation=()"
+    )
