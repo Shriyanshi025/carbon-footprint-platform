@@ -81,13 +81,13 @@ export const fetchReductionTips = async (footprintData) => {
 };
 
 export const wakeBackend = async () => {
-    try {
-      await apiClient.get('/', {
-        timeout: 60000,
-      });
-  
-      return true;
-    } catch {
-      return false;
-    }
-  };
+  try {
+    await apiClient.get('/', {
+      timeout: 60000,
+    });
+
+    return true;
+  } catch {
+    return false;
+  }
+};
